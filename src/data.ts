@@ -17,7 +17,7 @@ export const socialLinks = [
   {
     name: "linkedin",
     label: "LinkedIn",
-    href: "https://www.linkedin.com/in/hormoz-khodadadisharifabad-cpa-09053546",
+    href: "https://www.linkedin.com/company/taxima/",
   },
 ] as const;
 
