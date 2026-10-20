@@ -11,6 +11,7 @@ import LifeInsurancePage from "./pages/LifeInsurancePage";
 import PackagesPage from "./pages/PackagesPage";
 import PayrollPage from "./pages/PayrollPage";
 import PricingPage from "./pages/PricingPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import ResourceArticlePage, { TaxDeadlinesPage } from "./pages/ResourceArticlePage";
 import ResourcesPage from "./pages/ResourcesPage";
 import TaxServicesPage from "./pages/TaxServicesPage";
@@ -21,16 +22,26 @@ function ScrollManager() {
   useEffect(() => {
     if (hash) {
       const id = hash.replace("#", "");
-      const timer = window.setTimeout(() => {
+      let attempts = 0;
+      let timer: number | undefined;
+
+      const tryScroll = () => {
         const el = document.getElementById(id);
         if (el) {
           el.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else if (attempts < 25) {
+          attempts++;
+          timer = window.setTimeout(tryScroll, 40);
         }
-      }, 50);
-      return () => window.clearTimeout(timer);
+      };
+
+      timer = window.setTimeout(tryScroll, 30);
+      return () => {
+        if (timer) window.clearTimeout(timer);
+      };
     }
 
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [pathname, hash]);
 
   return null;
@@ -58,6 +69,7 @@ export default function App() {
             <Route path="/resources/:slug" element={<ResourceArticlePage />} />
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/life-insurance" element={<LifeInsurancePage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           </Routes>
         </main>
         <Footer />

@@ -41,6 +41,40 @@ export const serviceMenuItems = [
   { label: "Packages & Plans", href: "/packages" },
   { label: "Tax Planning", href: "/tax-services#tax-planning" },
   { label: "IRS & State Notices", href: "/tax-services#additional-services" },
+  { label: "Life Insurance", href: "/life-insurance" },
+] as const;
+
+export const footerServices = [
+  { label: "Tax Preparation", href: "/tax-services" },
+  { label: "Bookkeeping", href: "/bookkeeping" },
+  { label: "Payroll", href: "/payroll" },
+  { label: "Business Services", href: "/business-services" },
+  { label: "Tax Planning", href: "/tax-services#tax-planning" },
+  { label: "IRS & State Notices", href: "/tax-services#additional-services" },
+  { label: "Packages & Plans", href: "/packages" },
+  { label: "Life Insurance", href: "/life-insurance" },
+] as const;
+
+export const footerQuickLinks = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/tax-services" },
+  { label: "Industries", href: "/industries" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Packages & Plans", href: "/packages" },
+  { label: "Resources", href: "/resources" },
+  { label: "Life Insurance", href: "/life-insurance" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Contact", href: "/#contact" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
+] as const;
+
+export const footerResources = [
+  { label: "Tax Resources", href: "/resources" },
+  { label: "Tax Deadlines", href: "/resources/tax-deadlines-calendar" },
+  { label: "LLC vs S Corporation", href: "/resources/llc-vs-s-corporation" },
+  { label: "irs.gov", href: "https://www.irs.gov" },
+  { label: "ftb.ca.gov", href: "https://www.ftb.ca.gov" },
 ] as const;
 
 export const whyChoose = [

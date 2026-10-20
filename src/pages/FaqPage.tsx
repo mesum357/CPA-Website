@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { faqPageSections, PHONE, PHONE_HREF } from "../data";
 import { MinusIcon, PlusIcon, ShieldCheckIcon } from "../components/Icons";
-import { FinalCTA, PrimaryButton } from "../components/Layout";
+import { AppLink, FinalCTA, PrimaryButton } from "../components/Layout";
 import { usePageReveal } from "../hooks/usePageReveal";
 
 function FaqHero() {
@@ -35,12 +35,12 @@ function FaqHero() {
             >
               Browse Questions
             </PrimaryButton>
-            <a
+            <AppLink
               href="#contact"
               className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-6 py-3.5 text-[0.92rem] font-semibold text-white backdrop-blur-sm transition-all duration-500 ease-[var(--ease-out-soft)] hover:bg-white/20"
             >
               Schedule a Free Consultation
-            </a>
+            </AppLink>
           </div>
         </div>
       </div>
@@ -54,13 +54,13 @@ function SectionNav() {
       <div className="container-page">
         <div className="reveal flex flex-wrap justify-center gap-3">
           {faqPageSections.map((section) => (
-            <a
+            <AppLink
               key={section.id}
               href={`#${section.id}`}
               className="rounded-full bg-cream px-4 py-2 text-[0.88rem] font-semibold text-ink ring-1 ring-black/[0.04] transition-colors duration-300 hover:bg-brand hover:text-white"
             >
               {section.title}
-            </a>
+            </AppLink>
           ))}
         </div>
       </div>

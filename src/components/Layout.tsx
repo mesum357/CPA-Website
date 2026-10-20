@@ -2,15 +2,100 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   EMAIL,
+  footerQuickLinks,
+  footerResources,
+  footerServices,
   navLinks,
   officeHours,
   PHONE,
   PHONE_HREF,
   serviceMenuItems,
-  services,
   socialLinks,
 } from "../data";
 import { ChevronDownIcon, PhoneIcon, SocialIcon } from "./Icons";
+
+export function AppLink({
+  href,
+  children,
+  className = "",
+  onClick,
+  target,
+  rel,
+  role,
+}: {
+  href: string;
+  children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+  target?: string;
+  rel?: string;
+  role?: string;
+}) {
+  const location = useLocation();
+
+  const isExternal =
+    href.startsWith("http://") ||
+    href.startsWith("https://") ||
+    href.startsWith("tel:") ||
+    href.startsWith("mailto:");
+
+  if (isExternal) {
+    const isBlank = href.startsWith("http");
+    return (
+      <a
+        href={href}
+        target={target ?? (isBlank ? "_blank" : undefined)}
+        rel={rel ?? (isBlank ? "noopener noreferrer" : undefined)}
+        className={className}
+        onClick={onClick}
+        role={role}
+      >
+        {children}
+      </a>
+    );
+  }
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    onClick?.();
+
+    if (href === "#") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    const [targetPathRaw, targetHash] = href.split("#");
+    const targetPath = targetPathRaw || "/";
+    const currentPath = location.pathname;
+
+    const isCurrentPage =
+      targetPath === currentPath ||
+      (targetPath === "" && currentPath === "/") ||
+      (targetPath === "/" && currentPath === "/");
+
+    if (isCurrentPage) {
+      if (targetHash) {
+        e.preventDefault();
+        const el = document.getElementById(targetHash);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        if (location.hash !== `#${targetHash}`) {
+          window.history.pushState(null, "", href);
+        }
+      } else {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
+
+  return (
+    <Link to={href} onClick={handleClick} className={className} role={role}>
+      {children}
+    </Link>
+  );
+}
 
 export function Logo() {
   return (
@@ -35,20 +120,13 @@ export function PrimaryButton({
   children: ReactNode;
   className?: string;
 }) {
-  const classes = `inline-flex items-center justify-center rounded-full bg-brand px-6 py-3.5 text-[0.92rem] font-semibold text-white shadow-[var(--shadow-btn)] transition-all duration-500 ease-[var(--ease-out-soft)] hover:bg-brand-soft hover:-translate-y-0.5 active:scale-[0.98] ${className}`;
-
-  if (href.startsWith("/") && !href.startsWith("/#") && !href.includes(":")) {
-    return (
-      <Link to={href} className={classes}>
-        {children}
-      </Link>
-    );
-  }
-
   return (
-    <a href={href} className={classes}>
+    <AppLink
+      href={href}
+      className={`inline-flex items-center justify-center rounded-full bg-brand px-6 py-3.5 text-[0.92rem] font-semibold text-white shadow-[var(--shadow-btn)] transition-all duration-500 ease-[var(--ease-out-soft)] hover:bg-brand-soft hover:-translate-y-0.5 active:scale-[0.98] ${className}`}
+    >
       {children}
-    </a>
+    </AppLink>
   );
 }
 
@@ -61,20 +139,13 @@ export function SecondaryButton({
   children: ReactNode;
   className?: string;
 }) {
-  const classes = `inline-flex items-center justify-center rounded-full border border-line bg-white/80 px-6 py-3.5 text-[0.92rem] font-semibold text-brand shadow-[0_8px_24px_rgba(10,28,43,0.06)] transition-all duration-500 ease-[var(--ease-out-soft)] hover:bg-white hover:-translate-y-0.5 active:scale-[0.98] ${className}`;
-
-  if (href.startsWith("/") && !href.startsWith("/#") && !href.includes(":")) {
-    return (
-      <Link to={href} className={classes}>
-        {children}
-      </Link>
-    );
-  }
-
   return (
-    <a href={href} className={classes}>
+    <AppLink
+      href={href}
+      className={`inline-flex items-center justify-center rounded-full border border-line bg-white/80 px-6 py-3.5 text-[0.92rem] font-semibold text-brand shadow-[0_8px_24px_rgba(10,28,43,0.06)] transition-all duration-500 ease-[var(--ease-out-soft)] hover:bg-white hover:-translate-y-0.5 active:scale-[0.98] ${className}`}
+    >
       {children}
-    </a>
+    </AppLink>
   );
 }
 
@@ -87,7 +158,8 @@ function ServicesDropdown({ onNavigate }: { onNavigate?: () => void }) {
     location.pathname.startsWith("/bookkeeping") ||
     location.pathname.startsWith("/payroll") ||
     location.pathname.startsWith("/business-services") ||
-    location.pathname.startsWith("/packages");
+    location.pathname.startsWith("/packages") ||
+    location.pathname.startsWith("/life-insurance");
 
   useEffect(() => {
     setOpen(false);
@@ -135,43 +207,20 @@ function ServicesDropdown({ onNavigate }: { onNavigate?: () => void }) {
         }`}
         role="menu"
       >
-        {serviceMenuItems.map((item) => {
-          const isRoute = item.href.startsWith("/") && !item.href.startsWith("/#");
-          const itemClass =
-            "block rounded-xl px-3.5 py-2.5 text-[0.9rem] font-medium text-ink/85 transition-colors duration-200 hover:bg-cream hover:text-brand";
-
-          if (isRoute) {
-            return (
-              <Link
-                key={item.label}
-                to={item.href}
-                role="menuitem"
-                className={itemClass}
-                onClick={() => {
-                  setOpen(false);
-                  onNavigate?.();
-                }}
-              >
-                {item.label}
-              </Link>
-            );
-          }
-
-          return (
-            <a
-              key={item.label}
-              href={item.href}
-              role="menuitem"
-              className={itemClass}
-              onClick={() => {
-                setOpen(false);
-                onNavigate?.();
-              }}
-            >
-              {item.label}
-            </a>
-          );
-        })}
+        {serviceMenuItems.map((item) => (
+          <AppLink
+            key={item.label}
+            href={item.href}
+            role="menuitem"
+            className="block rounded-xl px-3.5 py-2.5 text-[0.9rem] font-medium text-ink/85 transition-colors duration-200 hover:bg-cream hover:text-brand"
+            onClick={() => {
+              setOpen(false);
+              onNavigate?.();
+            }}
+          >
+            {item.label}
+          </AppLink>
+        ))}
       </div>
     </div>
   );
@@ -186,17 +235,25 @@ function NavItem({
   onClick?: () => void;
   className?: string;
 }) {
+  const location = useLocation();
+
   if ("hasMenu" in link && link.hasMenu) {
     return <ServicesDropdown onNavigate={onClick} />;
   }
 
-  const isRoute = link.href.startsWith("/") && !link.href.startsWith("/#");
+  const isHash = link.href.includes("#");
 
-  if (isRoute) {
+  if (!isHash && link.href.startsWith("/")) {
     return (
       <NavLink
         to={link.href}
-        onClick={onClick}
+        onClick={(e) => {
+          onClick?.();
+          if (location.pathname === link.href) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        }}
         className={({ isActive }) =>
           `${className ?? ""} ${isActive ? "text-brand" : "text-ink/80 hover:text-brand"}`
         }
@@ -207,9 +264,9 @@ function NavItem({
   }
 
   return (
-    <a href={link.href} onClick={onClick} className={className}>
+    <AppLink href={link.href} onClick={onClick} className={className}>
       {link.label}
-    </a>
+    </AppLink>
   );
 }
 
@@ -231,25 +288,16 @@ function MobileServices({ onNavigate }: { onNavigate: () => void }) {
       </button>
       {open ? (
         <div className="mb-1 ml-3 space-y-1 border-l border-line pl-3">
-          {serviceMenuItems.map((item) => {
-            const isRoute = item.href.startsWith("/") && !item.href.startsWith("/#");
-            const itemClass =
-              "block rounded-lg px-3 py-2 text-[0.95rem] font-medium text-ink/80 hover:bg-white hover:text-brand";
-
-            if (isRoute) {
-              return (
-                <Link key={item.label} to={item.href} className={itemClass} onClick={onNavigate}>
-                  {item.label}
-                </Link>
-              );
-            }
-
-            return (
-              <a key={item.label} href={item.href} className={itemClass} onClick={onNavigate}>
-                {item.label}
-              </a>
-            );
-          })}
+          {serviceMenuItems.map((item) => (
+            <AppLink
+              key={item.label}
+              href={item.href}
+              className="block rounded-lg px-3 py-2 text-[0.95rem] font-medium text-ink/80 hover:bg-white hover:text-brand"
+              onClick={onNavigate}
+            >
+              {item.label}
+            </AppLink>
+          ))}
         </div>
       ) : null}
     </div>
@@ -383,11 +431,14 @@ export function Footer() {
             Services
           </h3>
           <ul className="mt-5 space-y-2.5 text-[0.92rem]">
-            {services.map((s) => (
-              <li key={s.title}>
-                <a href={s.href} className="hover:text-white">
-                  {s.title}
-                </a>
+            {footerServices.map((s) => (
+              <li key={s.label}>
+                <AppLink
+                  href={s.href}
+                  className="hover:text-white transition-colors duration-200"
+                >
+                  {s.label}
+                </AppLink>
               </li>
             ))}
           </ul>
@@ -398,29 +449,14 @@ export function Footer() {
             Quick Links
           </h3>
           <ul className="mt-5 space-y-2.5 text-[0.92rem]">
-            {[
-              { label: "Home", href: "/" },
-              { label: "About", href: "/about" },
-              { label: "Services", href: "/tax-services" },
-              { label: "Industries", href: "/industries" },
-              { label: "Pricing", href: "/pricing" },
-              { label: "Packages & Plans", href: "/packages" },
-              { label: "Resources", href: "/resources" },
-              { label: "Life Insurance", href: "/life-insurance" },
-              { label: "FAQ", href: "/faq" },
-              { label: "Contact", href: "/#contact" },
-              { label: "Privacy Policy", href: "#" },
-            ].map((item) => (
+            {footerQuickLinks.map((item) => (
               <li key={item.label}>
-                {item.href.startsWith("/") && !item.href.startsWith("/#") ? (
-                  <Link to={item.href} className="hover:text-white">
-                    {item.label}
-                  </Link>
-                ) : (
-                  <a href={item.href} className="hover:text-white">
-                    {item.label}
-                  </a>
-                )}
+                <AppLink
+                  href={item.href}
+                  className="hover:text-white transition-colors duration-200"
+                >
+                  {item.label}
+                </AppLink>
               </li>
             ))}
           </ul>
@@ -432,12 +468,12 @@ export function Footer() {
           </h3>
           <ul className="mt-5 space-y-2.5 text-[0.92rem]">
             <li>
-              <a href={PHONE_HREF} className="hover:text-white">
+              <a href={PHONE_HREF} className="hover:text-white transition-colors duration-200">
                 {PHONE}
               </a>
             </li>
             <li>
-              <a href={`mailto:${EMAIL}`} className="hover:text-white">
+              <a href={`mailto:${EMAIL}`} className="hover:text-white transition-colors duration-200">
                 {EMAIL}
               </a>
             </li>
@@ -463,23 +499,14 @@ export function Footer() {
             Resources
           </h3>
           <ul className="mt-5 space-y-2.5 text-[0.92rem]">
-            {[
-              { label: "Tax Resources", href: "/resources" },
-              { label: "Tax Deadlines", href: "/resources/tax-deadlines-calendar" },
-              { label: "LLC vs S Corporation", href: "/resources/llc-vs-s-corporation" },
-              { label: "irs.gov", href: "https://www.irs.gov" },
-              { label: "ftb.ca.gov", href: "https://www.ftb.ca.gov" },
-            ].map((item) => (
+            {footerResources.map((item) => (
               <li key={item.label}>
-                {item.href.startsWith("/") ? (
-                  <Link to={item.href} className="hover:text-white">
-                    {item.label}
-                  </Link>
-                ) : (
-                  <a href={item.href} target="_blank" rel="noreferrer" className="hover:text-white">
-                    {item.label}
-                  </a>
-                )}
+                <AppLink
+                  href={item.href}
+                  className="hover:text-white transition-colors duration-200"
+                >
+                  {item.label}
+                </AppLink>
               </li>
             ))}
           </ul>
@@ -505,9 +532,12 @@ export function Footer() {
 
       <div className="container-page mt-12 flex flex-col gap-3 border-t border-white/10 py-6 text-[0.85rem] sm:flex-row sm:items-center sm:justify-between">
         <p>© 2026 Taxima CPA. All rights reserved.</p>
-        <a href="#" className="hover:text-white">
+        <AppLink
+          href="/privacy-policy"
+          className="hover:text-white transition-colors duration-200"
+        >
           Privacy Policy
-        </a>
+        </AppLink>
       </div>
     </footer>
   );

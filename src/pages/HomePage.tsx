@@ -23,7 +23,7 @@ import {
   SparkIcon,
   StarIcon,
 } from "../components/Icons";
-import { FinalCTA, PrimaryButton, SecondaryButton } from "../components/Layout";
+import { AppLink, FinalCTA, PrimaryButton, SecondaryButton } from "../components/Layout";
 import { usePageReveal } from "../hooks/usePageReveal";
 
 function Hero() {
@@ -167,12 +167,12 @@ function Services() {
                 <p className="mt-2 text-[0.98rem] leading-relaxed text-muted">
                   {service.description}
                 </p>
-                <a
+                <AppLink
                   href={service.href}
                   className="mt-6 inline-flex items-center gap-2 text-[0.92rem] font-semibold text-brand transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:translate-x-1"
                 >
                   Learn More <ArrowRightIcon />
-                </a>
+                </AppLink>
               </div>
             </article>
           ))}
@@ -203,12 +203,12 @@ function Services() {
                 <p className="mt-2 text-[0.98rem] leading-relaxed text-muted">
                   {service.description}
                 </p>
-                <a
+                <AppLink
                   href={service.href}
                   className="mt-6 inline-flex items-center gap-2 text-[0.92rem] font-semibold text-brand transition-transform duration-500 ease-[var(--ease-out-soft)] group-hover:translate-x-1"
                 >
                   Learn More <ArrowRightIcon />
-                </a>
+                </AppLink>
               </div>
             </article>
           ))}
